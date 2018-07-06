@@ -34,9 +34,16 @@ import net.rptools.maptool.client.walker.ZoneWalker;
 import net.rptools.maptool.client.walker.astar.AStarHorizHexEuclideanWalker;
 import net.rptools.maptool.model.TokenFootprint.OffsetTranslator;
 
+/*
+ * Horizontal Hex grids produce rows of hexes
+ * and have their points at the top
+ *  /\ /\ /\ /\ /\ /\
+ * |  |  |  |  |  |  |
+ *  \/ \/ \/ \/ \/ \/
+ *  */
 public class HexGridHorizontal extends HexGrid {
 
-	/*
+	/* 
 	 * Facings are set when a new map is created with a particular grid and these facings affect all maps with the same
 	 * grid. Other maps with different grids will remain the same.
 	 * 

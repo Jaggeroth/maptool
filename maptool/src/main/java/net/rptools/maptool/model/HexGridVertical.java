@@ -32,6 +32,16 @@ import net.rptools.maptool.client.walker.ZoneWalker;
 import net.rptools.maptool.client.walker.astar.AStarVertHexEuclideanWalker;
 import net.rptools.maptool.model.TokenFootprint.OffsetTranslator;
 
+/*
+ * Vertical Hex grids produce columns of hexes
+ * and have their points at the side
+ *  \_/ \
+ *  / \_/
+ *  \_/ \
+ *  / \_/
+ *  \_/ \
+ *  
+ */
 public class HexGridVertical extends HexGrid {
 
 	private static final int[] ALL_ANGLES = new int[] { -150, -120, -90, -60, -30, 0, 30, 60, 90, 120, 150, 180 };
