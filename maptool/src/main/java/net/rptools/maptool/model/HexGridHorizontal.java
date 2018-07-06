@@ -239,4 +239,98 @@ public class HexGridHorizontal extends HexGrid {
 	protected OffsetTranslator getOffsetTranslator() {
 		return OFFSET_TRANSLATOR;
 	}
+
+	private ZonePoint getZonePoint(ZonePoint vertex, CellPoint cell) {
+		ZonePoint origin = convert(new CellPoint(0,0));
+		ZonePoint zp = convert(cell);
+		return new ZonePoint(vertex.y + zp.x - origin.x + getOffsetX(), vertex.x + zp.y - origin.y + getOffsetY());
+	}
+	
+	@Override
+	public ZonePoint getNearestVertex(ZonePoint point) {
+		// Hack to return vertex or centre point
+		// Probably a much better way to do this mathematically :(
+		//
+		//System.out.println("--"+ point.x+ " "+point.y);
+		//for (ZonePoint z : getVertex()) {
+		//	System.out.println(z.x + " " + z.y);
+		//}
+		ZonePoint zp0 = getVertex().get(0);
+		ZonePoint zp1 = getVertex().get(1);
+		ZonePoint zp2 = getVertex().get(2);
+		ZonePoint zp3 = getVertex().get(3);
+		CellPoint cp = convert(point);
+		ZonePoint zp = convert(cp);
+		int t = (int) getURadius() / 2;
+		int e = (int)getEdgeLength() / 2;
+		int diffX = point.x - zp.x;
+		int diffY = point.y - zp.y;
+		boolean oddrow = (cp.y % 2 == 1);
+		if (Math.abs(diffY) > t) {
+			if (diffY<0) {
+				// 0 if odd 2
+				if (oddrow) {
+					cp.y--;
+					cp.x++;
+					return getZonePoint(zp2, cp);
+				} else {
+					return getZonePoint(zp0, cp);
+				}
+			} else {
+				// 3 if odd 1
+				if (oddrow) {
+					cp.y++;
+					cp.x++;
+					return getZonePoint(zp1, cp);
+				} else {
+					return getZonePoint(zp3, cp);
+				}
+			}
+		}
+		if (Math.abs(diffX) > e) {
+			if (diffY<0) {
+				if (diffX<0) {
+					// 1 if odd 3
+					if (oddrow) {
+						cp.y--;
+						return getZonePoint(zp3, cp);
+					} else {
+						return getZonePoint(zp1, cp);
+					}
+				} else {
+					// 5 - if even 1 if odd 3
+					if (oddrow) {
+						cp.y--;
+						cp.x++;
+						return getZonePoint(zp3, cp);
+					} else {
+						cp.x++;
+						return getZonePoint(zp1, cp);
+					}
+				}
+			} else {
+				if (diffX < 0) {
+					// 2 if odd 0
+					if (oddrow) {
+						cp.y++;
+						return getZonePoint(zp0, cp);
+					} else {
+						return getZonePoint(zp2, cp);
+					}
+				} else {
+					// 4 if even 2 if odd 0
+					if (oddrow) {
+						cp.y++;
+						cp.x++;
+						return getZonePoint(zp0, cp);
+					} else {
+						cp.x++;
+						return getZonePoint(zp2, cp);
+					}
+				}
+			}
+		}
+		// Centre
+		return zp;
+	}
 }

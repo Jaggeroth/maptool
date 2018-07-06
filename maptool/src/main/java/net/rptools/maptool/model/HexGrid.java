@@ -23,6 +23,8 @@ import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.rptools.lib.image.ImageUtil;
 import net.rptools.lib.swing.SwingUtil;
@@ -334,6 +336,17 @@ public abstract class HexGrid extends Grid {
 		return hex;
 	}
 
+	protected List<ZonePoint> getVertex() {
+		List<ZonePoint> results = new ArrayList<ZonePoint>();
+		results.add(new ZonePoint(0, (int) minorRadius));
+		results.add(new ZonePoint((int) edgeProjection, 0));
+		results.add(new ZonePoint((int) (edgeProjection + edgeLength), 0));
+		results.add(new ZonePoint((int) (edgeProjection + edgeLength + edgeProjection), (int) minorRadius));
+		results.add(new ZonePoint((int) (edgeProjection + edgeLength), (int) (minorRadius * 2)));
+		results.add(new ZonePoint((int) (edgeProjection), (int) (minorRadius * 2)));
+		return results;
+	}
+
 	private GeneralPath createHalfShape(double minorRadius, double edgeProjection, double edgeLength) {
 		GeneralPath hex = new GeneralPath();
 		hex.moveTo(0, (int) minorRadius);
@@ -451,7 +464,7 @@ public abstract class HexGrid extends Grid {
 		Object oldAntiAlias = SwingUtil.useAntiAliasing(g);
 		g.setColor(new Color(getZone().getGridColor()));
 		g.setStroke(new BasicStroke(AppState.getGridSize()));
-
+		
 		for (double v = offV % (scaledMinorRadius * 2) - (scaledMinorRadius * 2); v < getRendererSizeV(renderer); v += scaledMinorRadius) {
 			double offsetU = (int) (count % 2 == 0 ? 0 : -(scaledEdgeProjection + scaledEdgeLength));
 			count++;
