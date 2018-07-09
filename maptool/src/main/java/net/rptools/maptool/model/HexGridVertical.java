@@ -219,26 +219,26 @@ public class HexGridVertical extends HexGrid {
 	protected OffsetTranslator getOffsetTranslator() {
 		return OFFSET_TRANSLATOR;
 	}
-
-	private boolean roundUp(CellPoint cell) {
-		int standardY = (int) (getEdgeProjection() + getEdgeLength());
-		ZonePoint zp = convert(cell);
-		CellPoint cellPlus = new CellPoint(cell.x,cell.y);
-		cellPlus.x++;
-		ZonePoint zp1 = convert(cellPlus);
-		if (zp1.x-zp.x > standardY)
-			return true;
-		return false;
-	}
-
-	private ZonePoint getZonePoint(ZonePoint vertex, CellPoint cell) {
-		return getZonePoint(vertex, cell, false);
-	}
 	
-	private ZonePoint getZonePoint(ZonePoint vertex, CellPoint cell, boolean roundUp) {
-		ZonePoint origin = convert(new CellPoint(0,0));
-		ZonePoint zp = convert(cell);
-		return new ZonePoint(vertex.x + zp.x - origin.x + getOffsetX() + (roundUp?1:0), vertex.y + zp.y - origin.y + getOffsetY());
+	private ZonePoint getZonePoint(int vertex, CellPoint cell) {
+		double y = cell.y * getSize();
+		if ((cell.x < 0) && (cell.x % 2 != 0)) {
+			y = y + getMinorRadius();
+		}
+		double x = cell.x * getEdgeLength() * 1.5;
+		if (vertex == 0) {
+			y = y + getMinorRadius();
+		} else if (vertex == 1) {
+			x = x + (getEdgeLength() / 2);
+		} else if (vertex == 2) {
+			x = (cell.x + 1) * getEdgeLength() * 1.5;
+		} else if (vertex == 3) {
+			y = y + getMinorRadius();
+			x = x + (getEdgeLength() * 2);
+		}
+		x = x + getOffsetX();
+		y = y + getOffsetY();
+		return new ZonePoint((int)x, (int)y);
 	}
 	
 	@Override
@@ -250,10 +250,6 @@ public class HexGridVertical extends HexGrid {
 		//for (ZonePoint z : getVertex()) {
 		//	System.out.println(z.x + " " + z.y);
 		//}
-		ZonePoint zp0 = getVertex().get(0);
-		ZonePoint zp1 = getVertex().get(1);
-		ZonePoint zp2 = getVertex().get(2);
-		ZonePoint zp3 = getVertex().get(3);
 		CellPoint cp = convert(point);
 		ZonePoint zp = convert(cp);
 		int t = (int) getURadius() / 2;
@@ -267,18 +263,18 @@ public class HexGridVertical extends HexGrid {
 				if (oddcol) {
 					cp.x--;
 					cp.y++;
-					return getZonePoint(zp2, cp, roundUp(cp));
+					return getZonePoint(2, cp);
 				} else {
-					return getZonePoint(zp0, cp);
+					return getZonePoint(0, cp);
 				}
 			} else {
 				// 3 if odd 1
 				if (oddcol) {
 					cp.x++;
 					cp.y++;
-					return getZonePoint(zp1, cp);
+					return getZonePoint(1, cp);
 				} else {
-					return getZonePoint(zp3, cp, roundUp(cp));
+					return getZonePoint(3, cp);
 				}
 			}
 		}
@@ -288,17 +284,17 @@ public class HexGridVertical extends HexGrid {
 					// 1 if odd 3
 					if (oddcol) {
 						cp.x--;
-						return getZonePoint(zp3, cp, roundUp(cp));
+						return getZonePoint(3, cp);
 					} else {
-						return getZonePoint(zp1, cp);
+						return getZonePoint(1, cp);
 					}
 				} else {
 					// 2 if odd 0
 					if (oddcol) {
 						cp.x++;
-						return getZonePoint(zp0, cp);
+						return getZonePoint(0, cp);
 					} else {
-						return getZonePoint(zp2, cp, roundUp(cp));
+						return getZonePoint(2, cp);
 					}
 				}
 			} else {
@@ -307,20 +303,20 @@ public class HexGridVertical extends HexGrid {
 					if (oddcol) {
 						cp.x--;
 						cp.y++;
-						return getZonePoint(zp3, cp, roundUp(cp));
+						return getZonePoint(3, cp);
 					} else {
 						cp.y++;
-						return getZonePoint(zp1, cp);
+						return getZonePoint(1, cp);
 					}
 				} else {
 					// 4 if even 2 if odd 0
 					if (oddcol) {
 						cp.y++;
 						cp.x++;
-						return getZonePoint(zp0, cp);
+						return getZonePoint(0, cp);
 					} else {
 						cp.y++;
-						return getZonePoint(zp2, cp, roundUp(cp));
+						return getZonePoint(2, cp);
 					}
 				}
 			}
