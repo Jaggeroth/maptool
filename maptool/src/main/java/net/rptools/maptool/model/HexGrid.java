@@ -608,4 +608,28 @@ public abstract class HexGrid extends Grid {
 	}
 
 	protected abstract OffsetTranslator getOffsetTranslator();
+	
+	@Override
+	public Area getTokenCellArea(Rectangle bounds) {
+		return getTokenCellArea(new Area(bounds));
+	}
+
+	@Override
+	public Area getTokenCellArea(Area bounds) {
+		// Get the cell footprint
+		Rectangle footprint = bounds.getBounds();
+		double scalew = footprint.width / getCellWidth();
+		double scaleh = footprint.height / getCellHeight();
+		footprint.x = -footprint.width / 2;
+		footprint.y = -footprint.height / 2;
+		// convert the cell footprint to an area
+		Area cellShape = getZone().getGrid().createCellShape(footprint.height);
+		AffineTransform tscale = new AffineTransform();
+		tscale.scale(scalew, scaleh);
+		cellShape.transform(tscale);
+		AffineTransform mtx = new AffineTransform();
+		mtx.translate(bounds.getBounds().getX(), bounds.getBounds().getY());
+		cellShape.transform(mtx);
+		return cellShape;
+	}
 }

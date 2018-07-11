@@ -243,85 +243,15 @@ public class HexGridVertical extends HexGrid {
 	
 	@Override
 	public ZonePoint getNearestVertex(ZonePoint point) {
-		// Hack to return vertex or centre point
-		// Probably a much better way to do this mathematically :(
+		double heightHalf = getURadius() / 2;
 		//
-		//System.out.println("--"+ point.x+ " "+point.y);
-		//for (ZonePoint z : getVertex()) {
-		//	System.out.println(z.x + " " + z.y);
-		//}
-		CellPoint cp = convert(point);
-		ZonePoint zp = convert(cp);
-		int t = (int) getURadius() / 2;
-		int e = (int)getEdgeLength() / 2;
-		int diffX = point.x - zp.x;
-		int diffY = point.y - zp.y;
-		boolean oddcol = (cp.x % 2 == 1);
-		if (Math.abs(diffX) > e) {
-			if (diffX<0) {
-				// 0 if odd 2
-				if (oddcol) {
-					cp.x--;
-					cp.y++;
-					return getZonePoint(2, cp);
-				} else {
-					return getZonePoint(0, cp);
-				}
-			} else {
-				// 3 if odd 1
-				if (oddcol) {
-					cp.x++;
-					cp.y++;
-					return getZonePoint(1, cp);
-				} else {
-					return getZonePoint(3, cp);
-				}
-			}
-		}
-		if (Math.abs(diffY) > t) {
-			if (diffY<0) {
-				if (diffX<0) {
-					// 1 if odd 3
-					if (oddcol) {
-						cp.x--;
-						return getZonePoint(3, cp);
-					} else {
-						return getZonePoint(1, cp);
-					}
-				} else {
-					// 2 if odd 0
-					if (oddcol) {
-						cp.x++;
-						return getZonePoint(0, cp);
-					} else {
-						return getZonePoint(2, cp);
-					}
-				}
-			} else {
-				if (diffX < 0) {
-					// 5 if even 1 if odd 3;
-					if (oddcol) {
-						cp.x--;
-						cp.y++;
-						return getZonePoint(3, cp);
-					} else {
-						cp.y++;
-						return getZonePoint(1, cp);
-					}
-				} else {
-					// 4 if even 2 if odd 0
-					if (oddcol) {
-						cp.y++;
-						cp.x++;
-						return getZonePoint(0, cp);
-					} else {
-						cp.y++;
-						return getZonePoint(2, cp);
-					}
-				}
-			}
-		}
-		// Centre
-		return zp;
+		double isoY = ((point.y - getOffsetY()) / getVRadius() + (point.x - getOffsetX()) / heightHalf) / 2;
+		double isoX = ((point.x - getOffsetX()) / heightHalf - (point.y - getOffsetY()) / getVRadius()) / 2;
+		int newX = (int) Math.floor(isoX);
+		int newY = (int) Math.floor(isoY);
+		//
+		double mapY = (newY - newX) * getVRadius();
+		double mapX = ((newX + newY) * heightHalf) + heightHalf;
+		return new ZonePoint((int) (mapX) + getOffsetX(), (int) (mapY) + getOffsetY());
 	}
 }
