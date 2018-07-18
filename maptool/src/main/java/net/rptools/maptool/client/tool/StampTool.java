@@ -68,6 +68,7 @@ import net.rptools.maptool.client.ui.zone.ZoneRenderer;
 import net.rptools.maptool.language.I18N;
 import net.rptools.maptool.model.CellPoint;
 import net.rptools.maptool.model.GUID;
+import net.rptools.maptool.model.Grid;
 import net.rptools.maptool.model.Token;
 import net.rptools.maptool.model.Zone;
 import net.rptools.maptool.model.Zone.Layer;
@@ -146,7 +147,7 @@ public class StampTool extends DefaultTool implements ZoneOverlay {
 	public boolean isAvailable() {
 		return MapTool.getPlayer().isGM();
 	}
-
+	
 	@Override
 	protected void detachFrom(ZoneRenderer renderer) {
 		MapTool.getFrame().hideControlPanel();
@@ -794,6 +795,7 @@ public class StampTool extends DefaultTool implements ZoneOverlay {
 
 	@Override
 	protected void installKeystrokes(Map<KeyStroke, Action> actionMap) {
+		System.out.println("Install Stamp tool keys");
 		super.installKeystrokes(actionMap);
 
 		actionMap.put(AppActions.CUT_TOKENS.getKeyStroke(), AppActions.CUT_TOKENS);

@@ -83,15 +83,6 @@ public class GridlessGrid extends Grid {
 	}
 
 	@Override
-	public void uninstallMovementKeys(Map<KeyStroke, Action> actionMap) {
-		if (movementKeys != null) {
-			for (KeyStroke key : movementKeys.keySet()) {
-				actionMap.remove(key);
-			}
-		}
-	}
-
-	@Override
 	public Rectangle getBounds(CellPoint cp) {
 		return new Rectangle(cp.x, cp.y, getSize(), getSize());
 	}

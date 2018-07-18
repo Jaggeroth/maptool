@@ -173,6 +173,7 @@ public class PointerTool extends DefaultTool implements ZoneOverlay {
 		htmlRenderer.attach(renderer);
 		layerSelectionDialog.updateViewList();
 
+		addGridBasedKeys(renderer.getZone().getGrid(), true);
 		if (MapTool.getFrame().getLastSelectedLayer() != Zone.Layer.TOKEN) {
 			MapTool.getFrame().getToolbox().setSelectedTool(StampTool.class);
 		}
@@ -218,6 +219,7 @@ public class PointerTool extends DefaultTool implements ZoneOverlay {
 	@Override
 	protected void detachFrom(ZoneRenderer renderer) {
 		super.detachFrom(renderer);
+		addGridBasedKeys(renderer.getZone().getGrid(), false); 
 		MapTool.getFrame().hideControlPanel();
 		htmlRenderer.detach(renderer);
 	}
@@ -790,6 +792,7 @@ public class PointerTool extends DefaultTool implements ZoneOverlay {
 	 * @return true if the move was successful
 	 */
 	public boolean handleDragToken(ZonePoint zonePoint, int dx, int dy) {
+		System.out.println("drag:"+dx+","+dy);
 		Grid grid = renderer.getZone().getGrid();
 		if (tokenBeingDragged.isSnapToGrid() && grid.getCapabilities().isSnapToGridSupported()) {
 			// cellUnderMouse is actually token position if the token is being dragged with keys.
@@ -1002,6 +1005,7 @@ public class PointerTool extends DefaultTool implements ZoneOverlay {
 	 */
 	@Override
 	protected void installKeystrokes(Map<KeyStroke, Action> actionMap) {
+		System.out.println("Install Pointer tool keys");
 		super.installKeystrokes(actionMap);
 
 		actionMap.put(AppActions.CUT_TOKENS.getKeyStroke(), AppActions.CUT_TOKENS);
@@ -1057,8 +1061,9 @@ public class PointerTool extends DefaultTool implements ZoneOverlay {
 				stopTokenDrag();
 			}
 		});
-		/*
+		
 		int size = 1;
+		/*
 		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD7, 0), new MovementKey(this, -size, -size));
 		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD8, 0), new MovementKey(this, 0, -size));
 		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD9, 0), new MovementKey(this, size, -size));
@@ -1073,7 +1078,8 @@ public class PointerTool extends DefaultTool implements ZoneOverlay {
 		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), new MovementKey(this, 0, -size));
 		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), new MovementKey(this, 0, size));
 		*/
-		addGridBasedKeys(renderer.getZone().getGrid(), true);
+		if (renderer!=null)
+			addGridBasedKeys(renderer.getZone().getGrid(), true);
 
 		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, InputEvent.SHIFT_DOWN_MASK), new AbstractAction() {
 			private static final long serialVersionUID = 1L;
@@ -1220,6 +1226,7 @@ public class PointerTool extends DefaultTool implements ZoneOverlay {
 	 *            The Y movement in Cell units
 	 */
 	public void handleKeyMove(double dx, double dy) {
+		System.out.println(dx+","+dy);
 		Token keyToken = null;
 		if (!isDraggingToken) {
 			// Start
@@ -1257,22 +1264,15 @@ public class PointerTool extends DefaultTool implements ZoneOverlay {
 		ZonePoint zp = new ZonePoint(dragStartX, dragStartY);
 		Grid grid = renderer.getZone().getGrid();
 		if (tokenBeingDragged.isSnapToGrid() && grid.getCapabilities().isSnapToGridSupported()) {
+			int x = dragStartX + (int) dx;
+			int y = dragStartY + (int) dy;
+			zp = new ZonePoint(x, y);
 			CellPoint cp = grid.convert(zp);
-			cp.x += dx;
-			cp.y += dy;
 			zp = grid.convert(cp);
-			dx = zp.x - tokenBeingDragged.getX();
-			dy = zp.y - tokenBeingDragged.getY();
 		} else {
 			// Scalar for dx/dy in zone space.  Defaulting to essentially 1 pixel.
-			int moveFactor = 1;
-			if (tokenBeingDragged.isSnapToGrid()) {
-				// Move in grid size increments.  Allows tokens set snap-to-grid on gridless maps
-				// to move in whole cell size increments.
-				moveFactor = grid.getSize();
-			}
-			int x = dragStartX + (int) (dx * moveFactor);
-			int y = dragStartY + (int) (dy * moveFactor);
+			int x = dragStartX + (int) dx;
+			int y = dragStartY + (int) dy;
 			zp = new ZonePoint(x, y);
 		}
 		isMovingWithKeys = true;

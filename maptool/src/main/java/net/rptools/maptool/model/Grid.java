@@ -14,6 +14,7 @@ package net.rptools.maptool.model;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Area;
@@ -29,6 +30,7 @@ import javax.swing.KeyStroke;
 
 import net.rptools.lib.FileUtil;
 import net.rptools.maptool.client.AppPreferences;
+import net.rptools.maptool.client.tool.DefaultTool;
 import net.rptools.maptool.client.tool.PointerTool;
 import net.rptools.maptool.client.ui.zone.ZoneRenderer;
 import net.rptools.maptool.client.walker.ZoneWalker;
@@ -374,7 +376,22 @@ public abstract class Grid implements Cloneable {
 	 */
 	abstract public void installMovementKeys(PointerTool callback, Map<KeyStroke, Action> actionMap);
 
-	abstract public void uninstallMovementKeys(Map<KeyStroke, Action> actionMap);
+	@SuppressWarnings("unlikely-arg-type")
+	public void uninstallMovementKeys(Map<KeyStroke, Action> actionMap) {
+		System.out.println("uninstall iso movement keys");
+		actionMap.remove(KeyEvent.VK_NUMPAD1);
+		actionMap.remove(KeyEvent.VK_NUMPAD2);
+		actionMap.remove(KeyEvent.VK_NUMPAD3);
+		actionMap.remove(KeyEvent.VK_NUMPAD4);
+		actionMap.remove(KeyEvent.VK_NUMPAD6);
+		actionMap.remove(KeyEvent.VK_NUMPAD7);
+		actionMap.remove(KeyEvent.VK_NUMPAD8);
+		actionMap.remove(KeyEvent.VK_NUMPAD9);
+		actionMap.remove(KeyEvent.VK_LEFT);
+		actionMap.remove(KeyEvent.VK_RIGHT);
+		actionMap.remove(KeyEvent.VK_UP);
+		actionMap.remove(KeyEvent.VK_DOWN);
+	}
 
 	static class DirectionCalculator {
 		private static final int NW = 1;
