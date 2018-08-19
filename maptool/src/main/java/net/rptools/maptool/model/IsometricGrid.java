@@ -126,7 +126,7 @@ public class IsometricGrid extends Grid {
 
 	@Override
 	public Dimension getCellOffset() {
-		return new Dimension((int) -getCellWidthHalf(), (int) -getCellHeightHalf()); //(int) -getCellWidthHalf(),(int)getCellHeightHalf()
+		return new Dimension((int) -getCellWidthHalf(), (int) -getCellHeightHalf());
 	}
 
 	@Override
