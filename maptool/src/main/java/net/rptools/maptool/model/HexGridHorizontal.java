@@ -117,6 +117,43 @@ public class HexGridHorizontal extends HexGrid {
 	 * @see net.rptools.maptool.model.Grid#installMovementKeys(net.rptools.maptool.client.tool.PointerTool, java.util.Map)
 	 */
 	@Override
+	public Dimension getMovementVector(int keyEvent, boolean snapToGrid) {
+		//System.out.println(getVRadius());
+		//System.out.println(getURadius());
+		//System.out.println(getEdgeLength());
+		int size = snapToGrid ? getSize() : 1;
+		int sizeH = snapToGrid ? (int) getVRadius() : 1;
+		int ySize = snapToGrid ? (int) getURadius() * 2 : 1;
+		// same result regardless of snaptogrid value
+		switch (keyEvent) {
+		case KeyEvent.VK_NUMPAD1 :
+			return new Dimension(0, 1);
+		case KeyEvent.VK_NUMPAD2 :
+			return new Dimension(0, size);
+		case KeyEvent.VK_NUMPAD3 :
+			return new Dimension(sizeH, ySize);
+		case KeyEvent.VK_NUMPAD4 :
+			return new Dimension(-size, 0);
+		case KeyEvent.VK_NUMPAD6 :
+			return new Dimension(size, 0);
+		case KeyEvent.VK_NUMPAD7 :
+			return new Dimension(-sizeH, -ySize);
+		case KeyEvent.VK_NUMPAD8 :
+			return new Dimension(0, -28);
+		case KeyEvent.VK_NUMPAD9 :
+			return new Dimension(1, -1);
+		case KeyEvent.VK_LEFT :
+			return new Dimension(-1, 0);
+		case KeyEvent.VK_RIGHT :
+			return new Dimension(1, 0);
+		case KeyEvent.VK_UP :
+			return new Dimension(1, -1);
+		case KeyEvent.VK_DOWN :
+			return new Dimension(0, 1);
+		}
+		return new Dimension(0, 0);
+	}
+	@Override
 	public void installMovementKeys(PointerTool callback, Map<KeyStroke, Action> actionMap) {
 		if (movementKeys == null) {
 			movementKeys = new HashMap<KeyStroke, Action>(12); // parameter is 9/0.75 (load factor)

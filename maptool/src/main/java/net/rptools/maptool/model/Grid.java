@@ -493,6 +493,14 @@ public abstract class Grid implements Cloneable {
 	}
 
 	/**
+	 * Returns the x & y vector for a given key action
+	 * @return Dimension
+	 */
+	public Dimension getMovementVector(int keyEvent, boolean snapToGrid) {
+		return NO_DIM;
+	}
+
+	/**
 	 * Check the middle region by subdividing into 3x3 and checking to see if at least 6 are open.
 	 * 
 	 * @param regionToCheck

@@ -11,6 +11,7 @@
 
 package net.rptools.maptool.model;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
@@ -27,6 +28,12 @@ public class MovementKey extends AbstractAction {
 		dx = x;
 		dy = y;
 	}
+	
+	public MovementKey(PointerTool callback, Dimension v) {
+		tool = callback;
+		dx = v.getWidth();
+		dy = v.getHeight();
+	}
 
 	@Override
 	public String toString() {
@@ -34,6 +41,6 @@ public class MovementKey extends AbstractAction {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		tool.handleKeyMove(dx, dy);
+		tool.handleKeyMove(0);
 	}
 }

@@ -75,6 +75,7 @@ import net.rptools.maptool.model.CellPoint;
 import net.rptools.maptool.model.ExposedAreaMetaData;
 import net.rptools.maptool.model.GUID;
 import net.rptools.maptool.model.Grid;
+import net.rptools.maptool.model.GridMovementAction;
 import net.rptools.maptool.model.MovementKey;
 import net.rptools.maptool.model.Player;
 import net.rptools.maptool.model.Pointer;
@@ -1057,20 +1058,23 @@ public class PointerTool extends DefaultTool implements ZoneOverlay {
 				stopTokenDrag();
 			}
 		});
-		int size = 1;
-		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD7, 0), new MovementKey(this, -size, -size));
-		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD8, 0), new MovementKey(this, 0, -size));
-		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD9, 0), new MovementKey(this, size, -size));
-		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD4, 0), new MovementKey(this, -size, 0));
-		//		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD5, 0), new MovementKey(this, 0, 0));
-		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD6, 0), new MovementKey(this, size, 0));
-		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD1, 0), new MovementKey(this, -size, size));
-		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD2, 0), new MovementKey(this, 0, size));
-		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD3, 0), new MovementKey(this, size, size));
-		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), new MovementKey(this, -size, 0));
-		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), new MovementKey(this, size, 0));
-		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), new MovementKey(this, 0, -size));
-		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), new MovementKey(this, 0, size));
+		
+		/*
+		 * Movement keys now call grid method to calculate movement vector.
+		 */
+		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD1, 0), new GridMovementAction(this, KeyEvent.VK_NUMPAD1));
+		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD2, 0), new GridMovementAction(this, KeyEvent.VK_NUMPAD2));
+		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD3, 0), new GridMovementAction(this, KeyEvent.VK_NUMPAD3));
+		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD4, 0), new GridMovementAction(this, KeyEvent.VK_NUMPAD4));
+		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD6, 0), new GridMovementAction(this, KeyEvent.VK_NUMPAD6)); 
+		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD7, 0), new GridMovementAction(this, KeyEvent.VK_NUMPAD7));
+		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD8, 0), new GridMovementAction(this, KeyEvent.VK_NUMPAD8));
+		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD9, 0), new GridMovementAction(this, KeyEvent.VK_NUMPAD9));
+		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), new GridMovementAction(this, KeyEvent.VK_LEFT));
+		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), new GridMovementAction(this, KeyEvent.VK_RIGHT));
+		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), new GridMovementAction(this, KeyEvent.VK_UP));
+		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), new GridMovementAction(this, KeyEvent.VK_DOWN));
+
 
 		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, InputEvent.SHIFT_DOWN_MASK), new AbstractAction() {
 			private static final long serialVersionUID = 1L;
@@ -1207,6 +1211,12 @@ public class PointerTool extends DefaultTool implements ZoneOverlay {
 		}
 		renderer.repaint();
 	}
+	
+
+	//public void handleKeyMove(int keyEvent) {
+	//	Dimension v = renderer.getZone().getGrid().getMovementVector(keyEvent);
+	//	handleKeyMove(v.width, v.height);
+	//}
 
 	/**
 	 * Handle the movement of tokens by keypresses.
@@ -1216,7 +1226,7 @@ public class PointerTool extends DefaultTool implements ZoneOverlay {
 	 * @param dy
 	 *            The Y movement in Cell units
 	 */
-	public void handleKeyMove(double dx, double dy) {
+	public void handleKeyMove(int keyEvent) {
 		Token keyToken = null;
 		if (!isDraggingToken) {
 			// Start
@@ -1242,8 +1252,8 @@ public class PointerTool extends DefaultTool implements ZoneOverlay {
 				return;
 			}
 			// Note these are zone space coordinates
-			dragStartX = keyToken.getX();
-			dragStartY = keyToken.getY();
+			dragStartX = keyToken.getX() + renderer.getZone().getGrid().getCellOffset().width;
+			dragStartY = keyToken.getY() + renderer.getZone().getGrid().getCellOffset().height;
 			startTokenDrag(keyToken);
 		}
 		if (!isMovingWithKeys) {
@@ -1253,11 +1263,16 @@ public class PointerTool extends DefaultTool implements ZoneOverlay {
 		// The zone point the token will be moved to after adjusting for dx/dy
 		ZonePoint zp = new ZonePoint(dragStartX, dragStartY);
 		Grid grid = renderer.getZone().getGrid();
+
+		Dimension v = renderer.getZone().getGrid().getMovementVector(keyEvent, tokenBeingDragged.isSnapToGrid());
+		double dx = v.getWidth();
+		double dy = v.getHeight();
+		
 		if (tokenBeingDragged.isSnapToGrid() && grid.getCapabilities().isSnapToGridSupported()) {
 			CellPoint cp = grid.convert(zp);
-			cp.x += dx;
-			cp.y += dy;
 			zp = grid.convert(cp);
+			zp.x += v.width;
+			zp.y += v.height;
 			dx = zp.x - tokenBeingDragged.getX();
 			dy = zp.y - tokenBeingDragged.getY();
 		} else {
@@ -1272,6 +1287,7 @@ public class PointerTool extends DefaultTool implements ZoneOverlay {
 			int y = dragStartY + (int) (dy * moveFactor);
 			zp = new ZonePoint(x, y);
 		}
+		
 		isMovingWithKeys = true;
 		handleDragToken(zp, (int) dx, (int) dy);
 	}

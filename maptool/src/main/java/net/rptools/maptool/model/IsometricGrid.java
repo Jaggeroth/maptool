@@ -216,6 +216,41 @@ public class IsometricGrid extends Grid {
 		int y[] = { 0, (int) size / 2, (int) size, (int) size / 2 };
 		return new Area(new Polygon(x, y, 4));
 	}
+	
+	@Override
+	public Dimension getMovementVector(int keyEvent, boolean snapToGrid) {
+		int xSize = snapToGrid ? (int) getCellWidth() : 2;
+		int ySize = snapToGrid ? (int) getCellHeight() : 1;
+		int xSizeH = snapToGrid ? (int) getCellWidthHalf() : 2;
+		int ySizeH = snapToGrid ? (int) getCellHeightHalf() : 1;
+		switch (keyEvent) {
+		case KeyEvent.VK_NUMPAD1 :
+			return new Dimension(-xSize, 0);
+		case KeyEvent.VK_NUMPAD2 :
+			return new Dimension(-xSizeH, ySizeH);
+		case KeyEvent.VK_NUMPAD3 :
+			return new Dimension(0, ySize);
+		case KeyEvent.VK_NUMPAD4 :
+			return new Dimension(-xSizeH, -ySizeH);
+		case KeyEvent.VK_NUMPAD6 :
+			return new Dimension(xSizeH, ySizeH);
+		case KeyEvent.VK_NUMPAD7 :
+			return new Dimension(0, -ySize);
+		case KeyEvent.VK_NUMPAD8 :
+			return new Dimension(xSizeH, -ySizeH);
+		case KeyEvent.VK_NUMPAD9 :
+			return new Dimension(xSize, 0);
+		case KeyEvent.VK_LEFT :
+			return new Dimension(-xSizeH, -ySizeH);
+		case KeyEvent.VK_RIGHT :
+			return new Dimension(xSizeH, ySizeH);
+		case KeyEvent.VK_UP :
+			return new Dimension(xSizeH, -ySizeH);
+		case KeyEvent.VK_DOWN :
+			return new Dimension(-xSizeH, ySizeH);
+		}
+		return new Dimension(0, 0);
+	}
 
 	@Override
 	public void installMovementKeys(PointerTool callback, Map<KeyStroke, Action> actionMap) {

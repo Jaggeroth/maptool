@@ -103,6 +103,39 @@ public class SquareGrid extends Grid {
 		}
 		actionMap.putAll(movementKeys);
 	}
+	
+	@Override
+	public Dimension getMovementVector(int keyEvent, boolean snapToGrid) {
+		// same result regardless of snaptogrid value
+		int size = snapToGrid?getSize():1;
+		switch (keyEvent) {
+		case KeyEvent.VK_NUMPAD1 :
+			return new Dimension(-size, size);
+		case KeyEvent.VK_NUMPAD2 :
+			return new Dimension(0, size);
+		case KeyEvent.VK_NUMPAD3 :
+			return new Dimension(size, size);
+		case KeyEvent.VK_NUMPAD4 :
+			return new Dimension(-size, 0);
+		case KeyEvent.VK_NUMPAD6 :
+			return new Dimension(size, 0);
+		case KeyEvent.VK_NUMPAD7 :
+			return new Dimension(-size, -size);
+		case KeyEvent.VK_NUMPAD8 :
+			return new Dimension(0, -size);
+		case KeyEvent.VK_NUMPAD9 :
+			return new Dimension(size, -size);
+		case KeyEvent.VK_LEFT :
+			return new Dimension(-size, 0);
+		case KeyEvent.VK_RIGHT :
+			return new Dimension(size, 0);
+		case KeyEvent.VK_UP :
+			return new Dimension(0, -size);
+		case KeyEvent.VK_DOWN :
+			return new Dimension(0, size);
+		}
+		return new Dimension(0, 0);
+	}
 
 	@Override
 	public void uninstallMovementKeys(Map<KeyStroke, Action> actionMap) {
