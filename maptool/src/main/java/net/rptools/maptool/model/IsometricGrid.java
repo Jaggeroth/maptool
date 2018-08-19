@@ -126,7 +126,7 @@ public class IsometricGrid extends Grid {
 
 	@Override
 	public Dimension getCellOffset() {
-		return new Dimension((int) -getCellWidthHalf(), 0);
+		return new Dimension((int) -getCellWidthHalf(), (int) -getCellHeightHalf()); //(int) -getCellWidthHalf(),(int)getCellHeightHalf()
 	}
 
 	@Override
@@ -181,7 +181,7 @@ public class IsometricGrid extends Grid {
 	public ZonePoint convert(CellPoint cp) {
 		double mapX = (cp.x - cp.y) * getCellWidthHalf();
 		double mapY = (cp.x + cp.y) * getCellHeightHalf();
-		return new ZonePoint((int) (mapX) + getOffsetX(), (int) (mapY) + getOffsetY());
+		return new ZonePoint((int) (mapX) + getOffsetX(), (int) (mapY) + getOffsetY() + (int)getCellHeightHalf());
 	}
 
 	@Override

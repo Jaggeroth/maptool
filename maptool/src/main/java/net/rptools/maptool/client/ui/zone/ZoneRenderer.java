@@ -1963,6 +1963,7 @@ public class ZoneRenderer extends JComponent implements DropTargetListener, Comp
 
 				// OPTIMIZE: combine this with the code in renderTokens()
 				Rectangle footprintBounds = token.getBounds(zone);
+				set.setOffset(set.getOffsetX() - zone.getGrid().getCellOffset().width, set.getOffsetY() - zone.getGrid().getCellOffset().height);
 				ScreenPoint newScreenPoint = ScreenPoint.fromZonePoint(this, footprintBounds.x + set.getOffsetX(), footprintBounds.y + set.getOffsetY());
 
 				// get token image, using image table if present
