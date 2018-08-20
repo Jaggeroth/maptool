@@ -10,7 +10,7 @@ public class GridMovementAction extends AbstractAction {
 	private static final long serialVersionUID = -2937112931742781263L;
 	private final PointerTool tool;
 	private final int keyEvent;
-	
+
 	public GridMovementAction(PointerTool callback, int keyEvent) {
 		this.tool = callback;
 		this.keyEvent = keyEvent;
@@ -18,7 +18,7 @@ public class GridMovementAction extends AbstractAction {
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		tool.handleKeyMove(keyEvent);		
+		tool.handleKeyMove(keyEvent);
 	}
 
 }

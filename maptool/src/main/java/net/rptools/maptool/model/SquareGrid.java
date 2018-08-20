@@ -21,12 +21,8 @@ import java.awt.event.KeyEvent;
 import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import javax.swing.Action;
-import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
 import net.rptools.lib.image.ImageUtil;
@@ -35,7 +31,6 @@ import net.rptools.maptool.client.AppPreferences;
 import net.rptools.maptool.client.AppState;
 import net.rptools.maptool.client.MapTool;
 import net.rptools.maptool.client.ScreenPoint;
-import net.rptools.maptool.client.tool.PointerTool;
 import net.rptools.maptool.client.ui.zone.ZoneRenderer;
 import net.rptools.maptool.client.walker.WalkerMetric;
 import net.rptools.maptool.client.walker.ZoneWalker;
@@ -83,67 +78,36 @@ public class SquareGrid extends Grid {
 	}
 
 	@Override
-	public void installMovementKeys(PointerTool callback, Map<KeyStroke, Action> actionMap) {
-		if (movementKeys == null) {
-			movementKeys = new HashMap<KeyStroke, Action>(18); // This is 13/0.75, rounded up
-			int size = getSize();
-			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD7, 0), new MovementKey(callback, -size, -size));
-			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD8, 0), new MovementKey(callback, 0, -size));
-			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD9, 0), new MovementKey(callback, size, -size));
-			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD4, 0), new MovementKey(callback, -size, 0));
-			//			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD5, 0), new MovementKey(callback, 0, 0));
-			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD6, 0), new MovementKey(callback, size, 0));
-			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD1, 0), new MovementKey(callback, -size, size));
-			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD2, 0), new MovementKey(callback, 0, size));
-			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD3, 0), new MovementKey(callback, size, size));
-			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), new MovementKey(callback, -size, 0));
-			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), new MovementKey(callback, size, 0));
-			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), new MovementKey(callback, 0, -size));
-			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), new MovementKey(callback, 0, size));
-		}
-		actionMap.putAll(movementKeys);
-	}
-	
-	@Override
 	public Dimension getMovementVector(int keyEvent, boolean snapToGrid) {
 		// same result regardless of snaptogrid value
-		int size = snapToGrid?getSize():1;
+		int size = snapToGrid ? getSize() : 1;
 		switch (keyEvent) {
-		case KeyEvent.VK_NUMPAD1 :
+		case KeyEvent.VK_NUMPAD1:
 			return new Dimension(-size, size);
-		case KeyEvent.VK_NUMPAD2 :
+		case KeyEvent.VK_NUMPAD2:
 			return new Dimension(0, size);
-		case KeyEvent.VK_NUMPAD3 :
+		case KeyEvent.VK_NUMPAD3:
 			return new Dimension(size, size);
-		case KeyEvent.VK_NUMPAD4 :
+		case KeyEvent.VK_NUMPAD4:
 			return new Dimension(-size, 0);
-		case KeyEvent.VK_NUMPAD6 :
+		case KeyEvent.VK_NUMPAD6:
 			return new Dimension(size, 0);
-		case KeyEvent.VK_NUMPAD7 :
+		case KeyEvent.VK_NUMPAD7:
 			return new Dimension(-size, -size);
-		case KeyEvent.VK_NUMPAD8 :
+		case KeyEvent.VK_NUMPAD8:
 			return new Dimension(0, -size);
-		case KeyEvent.VK_NUMPAD9 :
+		case KeyEvent.VK_NUMPAD9:
 			return new Dimension(size, -size);
-		case KeyEvent.VK_LEFT :
+		case KeyEvent.VK_LEFT:
 			return new Dimension(-size, 0);
-		case KeyEvent.VK_RIGHT :
+		case KeyEvent.VK_RIGHT:
 			return new Dimension(size, 0);
-		case KeyEvent.VK_UP :
+		case KeyEvent.VK_UP:
 			return new Dimension(0, -size);
-		case KeyEvent.VK_DOWN :
+		case KeyEvent.VK_DOWN:
 			return new Dimension(0, size);
 		}
 		return new Dimension(0, 0);
-	}
-
-	@Override
-	public void uninstallMovementKeys(Map<KeyStroke, Action> actionMap) {
-		if (movementKeys != null) {
-			for (KeyStroke key : movementKeys.keySet()) {
-				actionMap.remove(key);
-			}
-		}
 	}
 
 	@Override

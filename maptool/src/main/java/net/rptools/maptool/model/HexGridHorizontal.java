@@ -19,16 +19,10 @@ import java.awt.geom.GeneralPath;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import javax.swing.Action;
-import javax.swing.KeyStroke;
 
 import net.rptools.maptool.client.AppPreferences;
 import net.rptools.maptool.client.MapTool;
-import net.rptools.maptool.client.tool.PointerTool;
 import net.rptools.maptool.client.ui.zone.ZoneRenderer;
 import net.rptools.maptool.client.walker.ZoneWalker;
 import net.rptools.maptool.client.walker.astar.AStarHorizHexEuclideanWalker;
@@ -118,69 +112,33 @@ public class HexGridHorizontal extends HexGrid {
 	 */
 	@Override
 	public Dimension getMovementVector(int keyEvent, boolean snapToGrid) {
-		//System.out.println(getVRadius());
-		//System.out.println(getURadius());
-		//System.out.println(getEdgeLength());
 		int size = snapToGrid ? getSize() : 1;
 		int sizeH = snapToGrid ? (int) getVRadius() : 1;
-		int ySize = snapToGrid ? (int) getURadius() * 2 : 1;
+		int sizeV = snapToGrid ? (int) (getURadius() * 1.5) : 1;
 		// same result regardless of snaptogrid value
 		switch (keyEvent) {
 		case KeyEvent.VK_NUMPAD1 :
-			return new Dimension(0, 1);
-		case KeyEvent.VK_NUMPAD2 :
-			return new Dimension(0, size);
+			return new Dimension(-sizeH, sizeV);
 		case KeyEvent.VK_NUMPAD3 :
-			return new Dimension(sizeH, ySize);
+			return new Dimension(sizeH, sizeV);
 		case KeyEvent.VK_NUMPAD4 :
 			return new Dimension(-size, 0);
 		case KeyEvent.VK_NUMPAD6 :
 			return new Dimension(size, 0);
 		case KeyEvent.VK_NUMPAD7 :
-			return new Dimension(-sizeH, -ySize);
-		case KeyEvent.VK_NUMPAD8 :
-			return new Dimension(0, -28);
+			return new Dimension(-sizeH, -sizeV);
 		case KeyEvent.VK_NUMPAD9 :
-			return new Dimension(1, -1);
+			return new Dimension(sizeH, -sizeV);
 		case KeyEvent.VK_LEFT :
-			return new Dimension(-1, 0);
+			return new Dimension(-size, 0);
 		case KeyEvent.VK_RIGHT :
-			return new Dimension(1, 0);
+			return new Dimension(size, 0);
 		case KeyEvent.VK_UP :
-			return new Dimension(1, -1);
+			return new Dimension(snapToGrid ? sizeH : 0, -sizeV);
 		case KeyEvent.VK_DOWN :
-			return new Dimension(0, 1);
+			return new Dimension(snapToGrid ? -sizeH : 0, sizeV);
 		}
 		return new Dimension(0, 0);
-	}
-	@Override
-	public void installMovementKeys(PointerTool callback, Map<KeyStroke, Action> actionMap) {
-		if (movementKeys == null) {
-			movementKeys = new HashMap<KeyStroke, Action>(12); // parameter is 9/0.75 (load factor)
-			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD7, 0), new MovementKey(callback, -1, -1));
-//			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD8, 0), new MovementKey(callback, 0, -1));
-			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD9, 0), new MovementKey(callback, 1, -1));
-			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD4, 0), new MovementKey(callback, -1, 0));
-//			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD5, 0), new MovementKey(callback, 0, 0));
-			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD6, 0), new MovementKey(callback, 1, 0));
-			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD1, 0), new MovementKey(callback, -1, 1));
-//			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD2, 0), new MovementKey(callback, 0, 1));
-			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD3, 0), new MovementKey(callback, 1, 1));
-			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), new MovementKey(callback, -1, 0));
-			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), new MovementKey(callback, 1, 0));
-//			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), new MovementKey(callback, 0, -1));
-//			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), new MovementKey(callback, 0, 1));
-		}
-		actionMap.putAll(movementKeys);
-	}
-
-	@Override
-	public void uninstallMovementKeys(Map<KeyStroke, Action> actionMap) {
-		if (movementKeys != null) {
-			for (KeyStroke key : movementKeys.keySet()) {
-				actionMap.remove(key);
-			}
-		}
 	}
 
 	@Override

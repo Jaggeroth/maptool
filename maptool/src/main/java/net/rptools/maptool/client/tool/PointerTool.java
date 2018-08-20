@@ -194,28 +194,6 @@ public class PointerTool extends DefaultTool implements ZoneOverlay {
 		super.addListeners(comp);
 	}
 
-	/**
-	 * Let the grid decide which keys perform which kind of movement. This allows hex grids to handle the six-sided
-	 * shapes intelligently depending on whether the grid is a vertical or horizontal grid. This also moves us one step
-	 * closer to defining the keys in an external file...
-	 * <p>
-	 * Boy, this is ugly. As I pin down fixes for code leading up to MT1.4 I find myself performing criminal acts on the
-	 * code base. :(
-	 */
-	@Override
-	protected void addGridBasedKeys(Grid grid, boolean enable) { // XXX Currently not called from anywhere
-		try {
-			if (enable) {
-				grid.installMovementKeys(this, keyActionMap);
-			} else {
-				grid.uninstallMovementKeys(keyActionMap);
-			}
-		} catch (Exception e) {
-			// If there was an exception just ignore those keystrokes...
-			MapTool.showError("exception adding grid-based keys; shouldn't get here!", e); // this gives me a hook to set a breakpoint
-		}
-	}
-
 	@Override
 	protected void detachFrom(ZoneRenderer renderer) {
 		super.detachFrom(renderer);
@@ -1058,7 +1036,7 @@ public class PointerTool extends DefaultTool implements ZoneOverlay {
 				stopTokenDrag();
 			}
 		});
-		
+
 		/*
 		 * Movement keys now call grid method to calculate movement vector.
 		 */
@@ -1066,7 +1044,7 @@ public class PointerTool extends DefaultTool implements ZoneOverlay {
 		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD2, 0), new GridMovementAction(this, KeyEvent.VK_NUMPAD2));
 		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD3, 0), new GridMovementAction(this, KeyEvent.VK_NUMPAD3));
 		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD4, 0), new GridMovementAction(this, KeyEvent.VK_NUMPAD4));
-		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD6, 0), new GridMovementAction(this, KeyEvent.VK_NUMPAD6)); 
+		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD6, 0), new GridMovementAction(this, KeyEvent.VK_NUMPAD6));
 		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD7, 0), new GridMovementAction(this, KeyEvent.VK_NUMPAD7));
 		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD8, 0), new GridMovementAction(this, KeyEvent.VK_NUMPAD8));
 		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD9, 0), new GridMovementAction(this, KeyEvent.VK_NUMPAD9));
@@ -1074,7 +1052,6 @@ public class PointerTool extends DefaultTool implements ZoneOverlay {
 		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), new GridMovementAction(this, KeyEvent.VK_RIGHT));
 		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), new GridMovementAction(this, KeyEvent.VK_UP));
 		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), new GridMovementAction(this, KeyEvent.VK_DOWN));
-
 
 		actionMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, InputEvent.SHIFT_DOWN_MASK), new AbstractAction() {
 			private static final long serialVersionUID = 1L;
@@ -1211,7 +1188,6 @@ public class PointerTool extends DefaultTool implements ZoneOverlay {
 		}
 		renderer.repaint();
 	}
-	
 
 	//public void handleKeyMove(int keyEvent) {
 	//	Dimension v = renderer.getZone().getGrid().getMovementVector(keyEvent);
@@ -1263,31 +1239,26 @@ public class PointerTool extends DefaultTool implements ZoneOverlay {
 		// The zone point the token will be moved to after adjusting for dx/dy
 		ZonePoint zp = new ZonePoint(dragStartX, dragStartY);
 		Grid grid = renderer.getZone().getGrid();
+		//CellPoint cp = grid.convert(zp);
+		//zp = grid.convert(cp);
 
 		Dimension v = renderer.getZone().getGrid().getMovementVector(keyEvent, tokenBeingDragged.isSnapToGrid());
 		double dx = v.getWidth();
 		double dy = v.getHeight();
-		
+
 		if (tokenBeingDragged.isSnapToGrid() && grid.getCapabilities().isSnapToGridSupported()) {
-			CellPoint cp = grid.convert(zp);
-			zp = grid.convert(cp);
+			//CellPoint cp = grid.convert(zp);
+			//zp = grid.convert(cp);
 			zp.x += v.width;
 			zp.y += v.height;
 			dx = zp.x - tokenBeingDragged.getX();
 			dy = zp.y - tokenBeingDragged.getY();
 		} else {
-			// Scalar for dx/dy in zone space.  Defaulting to essentially 1 pixel.
-			int moveFactor = 1;
-			if (tokenBeingDragged.isSnapToGrid()) {
-				// Move in grid size increments.  Allows tokens set snap-to-grid on gridless maps
-				// to move in whole cell size increments.
-				moveFactor = grid.getSize();
-			}
-			int x = dragStartX + (int) (dx * moveFactor);
-			int y = dragStartY + (int) (dy * moveFactor);
+			int x = dragStartX + (int) dx;
+			int y = dragStartY + (int) dy;
 			zp = new ZonePoint(x, y);
 		}
-		
+
 		isMovingWithKeys = true;
 		handleDragToken(zp, (int) dx, (int) dy);
 	}

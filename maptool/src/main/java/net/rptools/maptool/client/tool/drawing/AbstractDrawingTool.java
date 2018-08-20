@@ -241,7 +241,7 @@ public abstract class AbstractDrawingTool extends DefaultTool implements ZoneOve
 		if (!hasPaint(pen)) {
 			return;
 		}
-		if (MapTool.getPlayer().isGM()) 
+		if (MapTool.getPlayer().isGM())
 			drawable.setLayer(selectedLayer);
 		else
 			drawable.setLayer(Layer.TOKEN);

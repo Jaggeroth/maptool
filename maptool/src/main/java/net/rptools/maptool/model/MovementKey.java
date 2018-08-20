@@ -28,7 +28,7 @@ public class MovementKey extends AbstractAction {
 		dx = x;
 		dy = y;
 	}
-	
+
 	public MovementKey(PointerTool callback, Dimension v) {
 		tool = callback;
 		dx = v.getWidth();

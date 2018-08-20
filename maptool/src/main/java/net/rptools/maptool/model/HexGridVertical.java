@@ -13,20 +13,13 @@ package net.rptools.maptool.model;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import javax.swing.Action;
-import javax.swing.KeyStroke;
 
 import net.rptools.maptool.client.AppPreferences;
 import net.rptools.maptool.client.MapTool;
-import net.rptools.maptool.client.tool.PointerTool;
 import net.rptools.maptool.client.ui.zone.ZoneRenderer;
 import net.rptools.maptool.client.walker.ZoneWalker;
 import net.rptools.maptool.client.walker.astar.AStarVertHexEuclideanWalker;
@@ -103,36 +96,34 @@ public class HexGridVertical extends HexGrid {
 	 * @see net.rptools.maptool.model.Grid#installMovementKeys(net.rptools.maptool.client.tool.PointerTool, java.util.Map)
 	 */
 	@Override
-	public void installMovementKeys(PointerTool callback, Map<KeyStroke, Action> actionMap) {
-		if (movementKeys == null) {
-			movementKeys = new HashMap<KeyStroke, Action>(16); // parameter is 9/0.75 (load factor)
-			Rectangle r = getCellShape().getBounds();
-			double w = r.width * 0.707;
-			double h = r.height * 0.707;
-			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD7, 0), new MovementKey(callback, -w, -h));
-			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD8, 0), new MovementKey(callback, 0, -h));
-			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD9, 0), new MovementKey(callback, w, -h));
-//			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD4, 0), new MovementKey(callback, -1, 0));
-//			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD5, 0), new MovementKey(callback, 0, 0));
-//			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD6, 0), new MovementKey(callback, 1, 0));
-			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD1, 0), new MovementKey(callback, -w, h));
-			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD2, 0), new MovementKey(callback, 0, h));
-			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD3, 0), new MovementKey(callback, w, h));
-//			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), new MovementKey(callback, -1, 0));
-//			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), new MovementKey(callback, 1, 0));
-			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), new MovementKey(callback, 0, -h));
-			movementKeys.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), new MovementKey(callback, 0, h));
+	public Dimension getMovementVector(int keyEvent, boolean snapToGrid) {
+		int size = snapToGrid ? getSize() : 1;
+		int sizeH = snapToGrid ? (int) getVRadius() : 1;
+		int sizeV = snapToGrid ? (int) (getURadius() * 1.5) : 1;
+		// same result regardless of snaptogrid value
+		switch (keyEvent) {
+		case KeyEvent.VK_NUMPAD1 :
+			return new Dimension(-sizeV, sizeH);
+		case KeyEvent.VK_NUMPAD2 :
+			return new Dimension(0, size);
+		case KeyEvent.VK_NUMPAD3 :
+			return new Dimension(sizeV, sizeH);
+		case KeyEvent.VK_NUMPAD7 :
+			return new Dimension(-sizeV, -sizeH);
+		case KeyEvent.VK_NUMPAD8 :
+			return new Dimension(0, -size);
+		case KeyEvent.VK_NUMPAD9 :
+			return new Dimension(sizeV, -sizeH);
+		case KeyEvent.VK_LEFT :
+			return new Dimension(-sizeV, snapToGrid ? -sizeH : 0);
+		case KeyEvent.VK_RIGHT :
+			return new Dimension(sizeV, snapToGrid ? sizeH : 0);
+		case KeyEvent.VK_UP :
+			return new Dimension(0, -size);
+		case KeyEvent.VK_DOWN :
+			return new Dimension(0, size);
 		}
-		actionMap.putAll(movementKeys);
-	}
-
-	@Override
-	public void uninstallMovementKeys(Map<KeyStroke, Action> actionMap) {
-		if (movementKeys != null) {
-			for (KeyStroke key : movementKeys.keySet()) {
-				actionMap.remove(key);
-			}
-		}
+		return new Dimension(0, 0);
 	}
 
 	@Override
